@@ -9,11 +9,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Docker.DotNet" Version="3.125.15" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
-      <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9" />
-      <PackageReference Include="ModelContextProtocol" Version="1.4.0" />
+        <PackageReference Include="Docker.DotNet" Version="3.125.15"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9"/>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9"/>
+        <PackageReference Include="ModelContextProtocol" Version="1.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include=".github\workflows\cy.yml"/>
     </ItemGroup>
 
 </Project>
