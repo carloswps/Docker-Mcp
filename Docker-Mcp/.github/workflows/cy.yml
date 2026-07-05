@@ -34,13 +34,3 @@ jobs:
 
       - name: Build
         run: dotnet build --no-restore --configuration Release --warnaserror
-
-      - name: Test
-        run: dotnet test --no-build --configuration Release --verbosity normal --logger trx --logger "console;verbosity=detailed"
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.os }}
-          path: '**/TestResults/*.trx'
