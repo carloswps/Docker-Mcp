@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Logging.AddConsole(consoleOptions => { consoleOptions.LogToStandardErrorThreshold = LogLevel.Warning; });
+builder.Logging.AddConsole(consoleOptions => { consoleOptions.LogToStandardErrorThreshold = LogLevel.Information; });
 
 
 builder.Services.AddSingleton(_ =>
@@ -22,7 +22,18 @@ builder.Services.AddSingleton(_ =>
             $"({RuntimeInformation.OSDescription}). " +
             "Supported systems: Windows, Linux, and macOS.");
 
-    return new DockerClientConfiguration(dockerUri).CreateClient();
+    return new Lazy<DockerClient?>(() =>
+    {
+        try
+        {
+            return new DockerClientConfiguration(dockerUri).CreateClient();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[Docker] Failed to connect: {ex.Message}");
+            return null;
+        }
+    });
 });
 
 builder.Services
