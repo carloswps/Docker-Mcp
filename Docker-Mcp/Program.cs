@@ -5,8 +5,19 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Logging.AddConsole(consoleOptions => { consoleOptions.LogToStandardErrorThreshold = LogLevel.Information; });
+builder.Logging.AddConsole(consoleOptions => { consoleOptions.LogToStandardErrorThreshold = LogLevel.Trace; });
+builder.Logging.AddSimpleConsole(formatterOptions =>
+{
+    formatterOptions.IncludeScopes = false;
+    formatterOptions.TimestampFormat = "[HH:mm:ss] ";
+});
 
+builder.Logging.AddFilter(_ => true);
+builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
+builder.Logging.AddFilter("Microsoft.Hosting", LogLevel.Warning);
+builder.Logging.AddFilter("Microsoft.Extensions.Hosting", LogLevel.Warning);
+builder.Logging.AddFilter("ModelContextProtocol", LogLevel.Warning);
+builder.Logging.AddFilter("System", LogLevel.Warning);
 
 builder.Services.AddSingleton(_ =>
 {

@@ -1,109 +1,263 @@
-# Docker-Mcp
+# 🐳 Docker MCP Server
 
-An MCP (Model Context Protocol) server that exposes Docker operations as tools, so any MCP-compatible client (Claude Desktop, OpenCode, etc.) can manage your Docker containers, images and volumes through natural language.
+A **Model Context Protocol (MCP)** server built with **C#** and **.NET** that enables AI assistants to interact with the Docker Engine through natural language.
 
-Written in C# / .NET 10, built on top of [Docker.DotNet](https://github.com/dotnet/Docker.DotNet) and the official [ModelContextProtocol](https://github.com/modelcontextprotocol/csharp-sdk) C# SDK.
+This project exposes Docker operations as MCP tools, allowing clients such as Claude Desktop, Cline, VS Code, Zed, OpenCode, and other MCP-compatible applications to manage Docker containers safely and efficiently.
 
-## Features
+> **⚠️ Educational Project**
+>
+> This repository is primarily an educational project created to study and explore:
+>
+> - Model Context Protocol (MCP)
+> - C# and modern .NET development
+> - Docker Engine API integration
+> - Software architecture and design patterns
+> - AI tooling and automation
+>
+> While the project aims to follow production-quality coding practices, its main goal is learning, experimentation, and continuous improvement.
 
-The server speaks MCP over **stdio** and auto-registers every tool decorated with `[McpServerTool]` in the assembly. Currently exposed tools:
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
+![Docker](https://img.shields.io/badge/Docker-Required-2496ED)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-### Containers
-| Tool | Description |
-|------|-------------|
-| `ListRunningContainers` | Lists all running containers |
-| `ListAllContainers` | Lists all containers (running and stopped) |
-| `StartContainer` | Starts a container by name or ID |
-| `StopContainer` | Stops a container by name or ID |
-| `RemoveContainer` | Removes a container (optional `force`) |
-| `RestartContainer` | Restarts a container by name or ID |
-| `GetContainerLogs` | Returns the container logs (configurable `tail`) |
+---
 
-### Images
-| Tool | Description |
-|------|-------------|
-| `ListAllImages` | Lists all Docker images |
-| `PullImage` | Pulls an image from a registry |
-| `RemoveImage` | Removes an image (optional `force`) |
+# ✨ Features
 
-### Volumes
-| Tool | Description |
-|------|-------------|
-| `ListVolumes` | Lists all Docker volumes |
-| `CreateVolume` | Creates a new volume (optional `driver`) |
-| `RemoveVolume` | Removes a volume by name (optional `force`) |
+Current features include:
 
-### System
-| Tool | Description |
-|------|-------------|
-| `PingDocker` | Checks if the Docker daemon is available and responsive |
+- 🐳 Container management
+  - List containers
+  - Start containers
+  - Stop containers
+  - Restart containers
+  - Remove containers
+  - View logs
 
-## Requirements
+- 💚 Docker daemon health check
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- A working Docker daemon on the host
-  - Windows: `npipe://./pipe/docker_engine` (Docker Desktop)
-  - Linux / macOS: `unix:///var/run/docker.sock`
+- 🚀 Self-contained executable
 
-## Build
+- 🔒 Friendly error handling
+
+---
+
+# 🚧 Roadmap
+
+## Version 0.1
+
+- [x] Docker connection
+- [x] Health check
+- [ ] List containers
+- [ ] Start container
+- [ ] Stop container
+- [ ] Restart container
+- [ ] View logs
+
+## Version 0.2
+
+- [ ] Docker Compose support
+
+## Version 0.3
+
+- [ ] Image management
+
+## Version 0.4
+
+- [ ] Network management
+
+## Version 0.5
+
+- [ ] Volume management
+
+## Version 1.0
+
+- [ ] Container diagnostics
+- [ ] Resource monitoring
+- [ ] Smarter Docker assistant tools
+
+---
+
+# 📦 Installation
+
+## Option 1 — Download Release (Recommended)
+
+Download the latest release from the **Releases** page.
 
 ```bash
-dotnet restore
-dotnet build
+chmod +x Docker-Mcp
+./Docker-Mcp
 ```
 
-Release build (matches CI, treats warnings as errors):
+---
+
+## Option 2 — Build from Source
+
+Requirements:
+
+- .NET 10 SDK
+- Docker Engine or Docker Desktop
 
 ```bash
-dotnet build --configuration Release --warnaserror
+git clone https://github.com/your-user/docker-mcp.git
+
+cd docker-mcp/Docker-Mcp
+
+dotnet publish \
+    -c Release \
+    -r linux-x64 \
+    --self-contained \
+    -p:PublishSingleFile=true \
+    -o ./publish
+
+./publish/Docker-Mcp
 ```
 
-## Run
+---
 
-The server is meant to be launched by an MCP client, not run interactively:
+# ⚙️ Configuration
 
-```bash
-dotnet run --project Docker-Mcp/Docker-Mcp.csproj
+## Claude Desktop
+
+Add the following configuration to:
+
+### Linux
+
+```
+~/.config/Claude/claude_desktop_config.json
 ```
 
-## Configure with an MCP client
+### macOS
 
-Add the server to your MCP client config. Example for OpenCode / Claude Desktop:
+```
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+### Windows
+
+```
+%APPDATA%\Claude\claude_desktop_config.json
+```
 
 ```json
 {
   "mcpServers": {
-    "docker-mcp": {
-      "command": "dotnet",
-      "args": ["run", "--project", "C:/path/to/Docker-Mcp/Docker-Mcp/Docker-Mcp.csproj"]
+    "docker": {
+      "command": "/absolute/path/to/Docker-Mcp"
     }
   }
 }
 ```
 
-Adjust the path to your local checkout.
+Restart Claude Desktop.
 
-> Logs are emitted to **stderr**, so they never corrupt the MCP stream on **stdout**. Tool errors are returned as human-readable `❌ ...` strings instead of being thrown.
+The Docker tools will become available automatically.
 
-## Project structure
+---
 
-```
-Docker-Mcp/
-├── Docker-Mcp.sln
-└── Docker-Mcp/
-    ├── Program.cs          # Host setup, Docker client registration, MCP server wiring
-    └── Tools/
-        ├── DockerTools.cs     # Container + system tools
-        ├── ImageTools.cs      # Image tools
-        └── VolumeTools.cs     # Volume tools
+## MCP Inspector
+
+Useful during development.
+
+```bash
+npx @modelcontextprotocol/inspector /absolute/path/to/Docker-Mcp
 ```
 
-New tools are auto-discovered — just add a class annotated with `[McpServerToolType]` and methods annotated with `[McpServerTool]` in `Tools/`. No manual DI registration required.
+---
 
-## CI
+# 🛠️ Available Tools
 
-`.github/workflows/ci.yml` builds the project on `ubuntu-latest` and `windows-latest` with .NET `10.0.x`, treating warnings as errors.
+| Tool | Description |
+|------|-------------|
+| `PingDockerAsync` | Verify Docker daemon availability |
+| `ListRunningContainersAsync` | List running containers |
+| `ListAllContainersAsync` | List every container |
+| `StartContainerAsync` | Start a container |
+| `StopContainerAsync` | Stop a container |
+| `RestartContainerAsync` | Restart a container |
+| `RemoveContainerAsync` | Remove a container |
+| `GetContainerLogsAsync` | Retrieve container logs |
 
-## License
+---
 
-See the repository for license details.
+# 💬 Example Prompts
+
+Examples of prompts you can send to your AI assistant:
+
+> Is Docker running?
+
+> Show me all running containers.
+
+> List all containers, including stopped ones.
+
+> Restart the nginx container.
+
+> Show the last 100 log lines from my PostgreSQL container.
+
+> Remove the old Redis container.
+
+---
+
+# 🐳 Docker Requirements
+
+- Docker Engine 20.10+
+- Docker Desktop (Windows/macOS)
+
+### Linux
+
+Your user must belong to the **docker** group in order to access:
+
+```
+/var/run/docker.sock
+```
+
+---
+
+# 🛠️ Development
+
+Restore packages
+
+```bash
+dotnet restore
+```
+
+Build
+
+```bash
+dotnet build
+```
+
+Run
+
+```bash
+dotnet run
+```
+
+Run tests
+
+```bash
+dotnet test
+```
+
+Publish
+
+```bash
+dotnet publish \
+    -c Release \
+    -r linux-x64 \
+    --self-contained \
+    -p:PublishSingleFile=true
+```
+
+---
+
+# 🤝 Contributing
+
+Contributions, suggestions, and feedback are welcome.
+
+Since this project is part of my learning journey, improvements and discussions are greatly appreciated.
+
+
+---
+
+Built using C#, .NET and Docker.
