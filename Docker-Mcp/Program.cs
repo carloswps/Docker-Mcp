@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using Docker.DotNet;
+using Docker_Mcp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ builder.Logging.AddFilter("Microsoft.Hosting", LogLevel.Warning);
 builder.Logging.AddFilter("Microsoft.Extensions.Hosting", LogLevel.Warning);
 builder.Logging.AddFilter("ModelContextProtocol", LogLevel.Warning);
 builder.Logging.AddFilter("System", LogLevel.Warning);
+builder.Services.AddSingleton<DockerService>();
 
 builder.Services.AddSingleton(_ =>
 {

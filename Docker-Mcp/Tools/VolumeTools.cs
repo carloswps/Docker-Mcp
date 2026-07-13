@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
-using Docker.DotNet;
 using Docker.DotNet.Models;
+using Docker_Mcp.Services;
+using Docker_Mcp.Utils;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 
 namespace Docker_Mcp.Tools;
@@ -8,55 +10,48 @@ namespace Docker_Mcp.Tools;
 [McpServerToolType]
 public class VolumeTools
 {
-    private readonly Lazy<DockerClient?> _dockerClientFactory;
+    private readonly DockerService _docker;
+    private readonly ILogger<VolumeTools> _logger;
 
-    public VolumeTools(Lazy<DockerClient?> dockerClientFactory)
+    public VolumeTools(DockerService docker, ILogger<VolumeTools> logger)
     {
-        _dockerClientFactory = dockerClientFactory;
-    }
-
-    private string? CheckDocker()
-    {
-        return _dockerClientFactory.Value is null
-            ? "❌ Docker is not available."
-            : null;
+        _docker = docker;
+        _logger = logger;
     }
 
     [McpServerTool]
     [Description("Lists all Docker volumes")]
     public async Task<string> ListVolumesAsync()
     {
-        if (CheckDocker() is { } error) return error;
+        if (_docker.CheckDocker() is { } error) return error;
 
-        var volumes = await _dockerClientFactory.Value!.Volumes.ListAsync(
-            new VolumesListParameters());
+        return await _docker.TryExecuteAsync(async client =>
+        {
+            var volumes = await client.Volumes.ListAsync(
+                new VolumesListParameters());
 
-        if (volumes.Volumes.Count == 0) return "No volumes found.";
+            if (volumes.Volumes.Count == 0) return "No volumes found.";
 
-        return string.Join("\n", volumes.Volumes.Select(v =>
-            $"Name: {v.Name} | Driver: {v.Driver} | Mountpoint: {v.Mountpoint}"));
+            var lines = volumes.Volumes.Select(v =>
+                OutputFormatter.FormatVolume(v.Name, v.Driver, v.Mountpoint));
+
+            return string.Join("\n", lines);
+        }, "list volumes");
     }
 
     [McpServerTool]
     [Description("Creates a new Docker volume")]
     public async Task<string> CreateVolumeAsync(
         [Description("Volume name")] string name,
-        [Description("Volume driver (default: local)")]
-        string driver = "local")
+        [Description("Volume driver (default: local)")] string driver = "local")
     {
-        if (CheckDocker() is { } error) return error;
+        if (_docker.CheckDocker() is { } error) return error;
 
-        try
-        {
-            await _dockerClientFactory.Value!.Volumes.CreateAsync(
-                new VolumesCreateParameters { Name = name, Driver = driver });
-
-            return $"✅ Volume '{name}' created.";
-        }
-        catch (Exception ex)
-        {
-            return $"❌ Failed to create volume: {ex.Message}";
-        }
+        return await _docker.TryExecuteAsync(
+            client => client.Volumes.CreateAsync(
+                new VolumesCreateParameters { Name = name, Driver = driver }),
+            $"✅ Volume '{name}' created.",
+            $"create volume '{name}'");
     }
 
     [McpServerTool]
@@ -65,18 +60,11 @@ public class VolumeTools
         [Description("Volume name")] string name,
         [Description("Force remove")] bool force = false)
     {
-        if (CheckDocker() is { } error) return error;
+        if (_docker.CheckDocker() is { } error) return error;
 
-        try
-        {
-            await _dockerClientFactory.Value!.Volumes.RemoveAsync(
-                name, force);
-
-            return $"✅ Volume '{name}' removed.";
-        }
-        catch (Exception ex)
-        {
-            return $"❌ Failed to remove volume: {ex.Message}";
-        }
+        return await _docker.TryExecuteAsync(
+            client => client.Volumes.RemoveAsync(name, force),
+            $"✅ Volume '{name}' removed.",
+            $"remove volume '{name}'");
     }
 }

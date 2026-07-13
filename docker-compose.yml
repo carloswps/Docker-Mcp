@@ -1,0 +1,32 @@
+services:
+  docker-mcp:
+    container_name: docker-mcp
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: docker-mcp:latest
+
+    stdin_open: true
+    tty: false
+
+    restart: unless-stopped
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      DOTNET_ENVIRONMENT: Production
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    stop_grace_period: 10s
+
+    labels:
+      app: docker-mcp
+      service: mcp

@@ -1,0 +1,9 @@
+**/.git
+**/.gitkeep
+**/.idea
+**/.zed
+**/.github
+**/bin
+**/obj
+**/*.user
+**/*.sln.DotSettings
