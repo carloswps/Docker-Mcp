@@ -2,7 +2,6 @@ namespace Docker_Mcp.Utils;
 
 public static class OutputFormatter
 {
-
     public const string Success = "✅";
     public const string Error = "❌";
     public const string Info = "ℹ️";
@@ -33,5 +32,10 @@ public static class OutputFormatter
     public static string FormatVolume(string name, string driver, string mountpoint)
     {
         return $"Name: {name} | Driver: {driver} | Mountpoint: {mountpoint}";
+    }
+
+    public static string FormatNetwork(string shortId, string name, string driver, string scope)
+    {
+        return $"ID: {shortId} | Name: {name} | Driver: {driver} | Scope: {scope}";
     }
 }
