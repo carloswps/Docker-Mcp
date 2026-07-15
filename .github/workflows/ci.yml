@@ -2,9 +2,9 @@
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
+    branches: [main, dev]
 
 jobs:
   build-and-test:
@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        dotnet: [ '10.0.x' ]
+        os: [ubuntu-latest, windows-latest]
+        dotnet: ["10.0.x"]
 
     steps:
       - name: Checkout
@@ -27,7 +27,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet }}
-          cache: true
 
       - name: Restore dependencies
         run: dotnet restore
