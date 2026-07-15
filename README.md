@@ -27,14 +27,25 @@ This project exposes Docker operations as MCP tools, allowing clients such as Cl
 Current features include:
 
 - 🐳 Container management
-  - List containers
+  - List running containers
+  - List all containers (including stopped)
   - Start containers
   - Stop containers
   - Restart containers
   - Remove containers
-  - View logs
+  - View logs with tail support
 
 - 💚 Docker daemon health check
+
+- 🖼️ Image management
+  - List images
+  - Pull images
+  - Remove images
+
+- 💾 Volume management
+  - List volumes
+  - Create volumes
+  - Remove volumes
 
 - 🚀 Self-contained executable
 
@@ -48,11 +59,11 @@ Current features include:
 
 - [x] Docker connection
 - [x] Health check
-- [ ] List containers
-- [ ] Start container
-- [ ] Stop container
-- [ ] Restart container
-- [ ] View logs
+- [x] List containers
+- [x] Start container
+- [x] Stop container
+- [x] Restart container
+- [x] View logs
 
 ## Version 0.2
 
@@ -60,7 +71,10 @@ Current features include:
 
 ## Version 0.3
 
-- [ ] Image management
+- [x] Image management
+  - [x] List images
+  - [x] Pull images
+  - [x] Remove images
 
 ## Version 0.4
 
@@ -68,7 +82,10 @@ Current features include:
 
 ## Version 0.5
 
-- [ ] Volume management
+- [x] Volume management
+  - [x] List volumes
+  - [x] Create volumes
+  - [x] Remove volumes
 
 ## Version 1.0
 
@@ -177,6 +194,12 @@ npx @modelcontextprotocol/inspector /absolute/path/to/Docker-Mcp
 | `RestartContainerAsync` | Restart a container |
 | `RemoveContainerAsync` | Remove a container |
 | `GetContainerLogsAsync` | Retrieve container logs |
+| `ListAllImagesAsync` | List all Docker images |
+| `PullImageAsync` | Pull an image from a registry |
+| `RemoveImageAsync` | Remove an image |
+| `ListVolumesAsync` | List all Docker volumes |
+| `CreateVolumeAsync` | Create a new volume |
+| `RemoveVolumeAsync` | Remove a volume |
 
 ---
 
@@ -230,13 +253,7 @@ dotnet build
 Run
 
 ```bash
-dotnet run
-```
-
-Run tests
-
-```bash
-dotnet test
+dotnet run --project Docker-Mcp/Docker-Mcp.csproj
 ```
 
 Publish
