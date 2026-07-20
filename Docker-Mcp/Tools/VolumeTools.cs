@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Docker.DotNet.Models;
 using Docker_Mcp.Services;
+using Docker_Mcp.Services.Interfaces;
 using Docker_Mcp.Utils;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
@@ -10,10 +11,10 @@ namespace Docker_Mcp.Tools;
 [McpServerToolType]
 public class VolumeTools
 {
-    private readonly DockerService _docker;
+    private readonly IDockerService _docker;
     private readonly ILogger<VolumeTools> _logger;
 
-    public VolumeTools(DockerService docker, ILogger<VolumeTools> logger)
+    public VolumeTools(IDockerService docker, ILogger<VolumeTools> logger)
     {
         _docker = docker;
         _logger = logger;

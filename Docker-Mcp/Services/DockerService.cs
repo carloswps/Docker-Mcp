@@ -1,9 +1,10 @@
 using Docker.DotNet;
+using Docker_Mcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Docker_Mcp.Services;
 
-public class DockerService
+public class DockerService : IDockerService
 {
     private readonly Lazy<DockerClient?> _dockerClientFactory;
     private readonly ILogger<DockerService> _logger;

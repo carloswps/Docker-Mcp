@@ -4,16 +4,17 @@ using Docker_Mcp.Utils;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
+using Docker_Mcp.Services.Interfaces;
 
 namespace Docker_Mcp.Tools;
 
 [McpServerToolType]
 public class NetworkTools
 {
-    private readonly DockerService _docker;
+    private readonly IDockerService _docker;
     private readonly ILogger<NetworkTools> _logger;
 
-    public NetworkTools(ILogger<NetworkTools> logger, DockerService docker)
+    public NetworkTools(ILogger<NetworkTools> logger, IDockerService docker)
     {
         _logger = logger;
         _docker = docker;
